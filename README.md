@@ -1,4 +1,4 @@
-# Aim Monitoring Task Creator
+# Aim Monitoring Task
 
 A modern chat-based UI for creating monitoring tasks powered by Azure OpenAI GPT-5.
 
