@@ -277,7 +277,7 @@ export default function Home() {
                         <>
                           {textContent && (
                             <div className="bg-muted rounded-2xl rounded-tl-sm px-4 py-2.5">
-                              <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                              <p className="text-sm leading-relaxed whitespace-pre-wrap wrap-break-word">
                                 {textContent}
                               </p>
                             </div>
