@@ -37,10 +37,19 @@ export default function Home() {
     if (toolCall.toolName === "updateMonitoringTask") {
       const { scope, sources } = toolCall.input || toolCall.args || {};
 
-      setMonitoringTask((prev) => ({
-        scope: scope || prev.scope,
-        sources: sources ? [...prev.sources, ...sources] : prev.sources,
-      }));
+      setMonitoringTask((prev) => {
+        // If scope is being updated, reset sources
+        const shouldResetSources = scope && scope !== prev.scope;
+
+        return {
+          scope: scope || prev.scope,
+          sources: shouldResetSources
+            ? sources || [] // Use new sources or empty array if scope changed
+            : sources
+              ? [...prev.sources, ...sources] // Add to existing if scope unchanged
+              : prev.sources,
+        };
+      });
     }
   }, []);
 
