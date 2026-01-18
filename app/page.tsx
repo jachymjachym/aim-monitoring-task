@@ -173,6 +173,21 @@ export default function Home() {
     return null;
   };
 
+  // Extract success message from updateMonitoringTask output
+  const extractSuccessMessage = (message: any) => {
+    if (message.parts && Array.isArray(message.parts)) {
+      for (const part of message.parts) {
+        if (
+          part.type === "tool-updateMonitoringTask" &&
+          part.output?.autoReportResults?.message
+        ) {
+          return part.output.autoReportResults.message;
+        }
+      }
+    }
+    return null;
+  };
+
   // Extract text content from message
   const extractTextContent = (message: any) => {
     if (message.text) return message.text;
@@ -180,7 +195,7 @@ export default function Home() {
     if (message.parts && Array.isArray(message.parts)) {
       return message.parts
         .filter(
-          (part: any) => part.type === "text" || part.type === "reasoning",
+          (part: any) => part.type === "text", // Removed reasoning from display
         )
         .map((part: any) => part.text)
         .filter(Boolean)
@@ -273,6 +288,7 @@ export default function Home() {
                 const isLastMessage = index === messages.length - 1;
                 const textContent = extractTextContent(message);
                 const question = extractQuestion(message);
+                const successMessage = extractSuccessMessage(message);
                 const options = isLastMessage ? extractOptions(message) : null;
 
                 return (
@@ -299,6 +315,13 @@ export default function Home() {
                             <div className="bg-muted rounded-2xl rounded-tl-sm px-3 py-2 md:px-4 md:py-2.5">
                               <p className="text-xs md:text-sm leading-relaxed whitespace-pre-wrap wrap-break-word">
                                 {textContent}
+                              </p>
+                            </div>
+                          )}
+                          {successMessage && (
+                            <div className="bg-green-500/10 border border-green-500/20 rounded-2xl rounded-tl-sm px-3 py-2 md:px-4 md:py-2.5">
+                              <p className="text-xs md:text-sm leading-relaxed text-green-700 dark:text-green-400 font-medium">
+                                {successMessage}
                               </p>
                             </div>
                           )}
