@@ -1,6 +1,5 @@
 "use client";
 
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { MonitoringTask } from "@/lib/types";
@@ -21,6 +20,20 @@ const getSourceTypeLabel = (type: string): string => {
     company: "Company",
     sec_filing: "SEC Filing",
     news_outlet: "News Outlet",
+    podcast: "Podcast",
+    youtube_channel: "YouTube Channel",
+    newsletter: "Newsletter",
+    blog: "Blog",
+    reddit_community: "Reddit Community",
+    discord_server: "Discord Server",
+    slack_community: "Slack Community",
+    linkedin_profile: "LinkedIn Profile",
+    linkedin_company: "LinkedIn Company",
+    twitter_account: "Twitter Account",
+    patent_database: "Patent Database",
+    research_paper: "Research Paper",
+    government_data: "Government Data",
+    api: "API",
     other: "Other",
   };
   return labels[type] || type;

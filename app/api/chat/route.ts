@@ -53,8 +53,6 @@ export async function POST(req: Request) {
   try {
     const { messages } = await req.json();
 
-    console.log("Received messages:", messages?.length);
-
     let shouldInjectReportResults = false;
     let reportResultsData: { found: boolean; message: string } | null = null;
 
@@ -103,10 +101,6 @@ export async function POST(req: Request) {
             found: true,
             message: `✓ Success! I found ${sourceCount} relevant source${sourceCount > 1 ? "s" : ""} for your monitoring task${sourceNames ? ` including ${sourceNames}` : ""}.`,
           };
-          console.log(
-            "[AUTO-INJECT] Will inject reportResults:",
-            reportResultsData,
-          );
         }
       },
       tools: {

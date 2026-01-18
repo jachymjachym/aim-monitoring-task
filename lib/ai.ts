@@ -5,7 +5,6 @@ export const azure = createAzure({
   resourceName: "aim-australia-east",
 });
 
-// Available models
 export const models = {
   main: "gpt-5-hiring",
   mini: "gpt-5-mini-hiring",

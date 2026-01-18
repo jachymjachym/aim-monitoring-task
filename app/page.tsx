@@ -16,15 +16,13 @@ import {
 } from "lucide-react";
 
 export default function Home() {
-  // State
   const [monitoringTask, setMonitoringTask] = useState<MonitoringTask>({
     scope: undefined,
     sources: [],
   });
   const [input, setInput] = useState("");
   const [isHydrated, setIsHydrated] = useState(false);
-  const [initialMessages, setInitialMessages] = useState<any[]>([]);
-  const [showPreview, setShowPreview] = useState(false); // Hidden by default on mobile
+  const [showPreview, setShowPreview] = useState(false);
 
   // Refs for stable callbacks
   const processedToolCallsRef = useRef<Set<string>>(new Set());
@@ -33,8 +31,6 @@ export default function Home() {
 
   // Stable onToolCall handler using useCallback
   const handleToolCall = useCallback(({ toolCall }: any) => {
-    console.log("Tool call received:", toolCall);
-
     // Prevent duplicate processing
     if (processedToolCallsRef.current.has(toolCall.toolCallId)) {
       return;
@@ -88,7 +84,6 @@ export default function Home() {
       if (savedMessages) {
         try {
           const parsed = JSON.parse(savedMessages);
-          setInitialMessages(parsed);
           setMessages(parsed);
         } catch (e) {
           console.error("Failed to parse saved messages:", e);
@@ -194,9 +189,7 @@ export default function Home() {
 
     if (message.parts && Array.isArray(message.parts)) {
       return message.parts
-        .filter(
-          (part: any) => part.type === "text", // Removed reasoning from display
-        )
+        .filter((part: any) => part.type === "text")
         .map((part: any) => part.text)
         .filter(Boolean)
         .join("\n\n");
