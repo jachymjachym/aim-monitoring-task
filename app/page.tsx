@@ -18,10 +18,12 @@ export default function Home() {
   });
   const [input, setInput] = useState("");
   const [isHydrated, setIsHydrated] = useState(false);
+  const [initialMessages, setInitialMessages] = useState<any[]>([]);
 
   // Refs for stable callbacks
   const processedToolCallsRef = useRef<Set<string>>(new Set());
   const scrollRef = useRef<HTMLDivElement>(null);
+  const hasLoadedFromStorage = useRef(false);
 
   // Stable onToolCall handler using useCallback
   const handleToolCall = useCallback(({ toolCall }: any) => {
@@ -54,11 +56,54 @@ export default function Home() {
   }, []);
 
   // Initialize chat
-  const { messages, sendMessage, status } = useChat({
+  const { messages, sendMessage, status, setMessages } = useChat({
     onToolCall: handleToolCall,
   });
 
   const isLoading = status === "streaming" || status === "submitted";
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    if (!hasLoadedFromStorage.current && typeof window !== "undefined") {
+      hasLoadedFromStorage.current = true;
+
+      const savedTask = localStorage.getItem("monitoringTask");
+      const savedMessages = localStorage.getItem("chatMessages");
+
+      if (savedTask) {
+        try {
+          const parsed = JSON.parse(savedTask);
+          setMonitoringTask(parsed);
+        } catch (e) {
+          console.error("Failed to parse saved task:", e);
+        }
+      }
+
+      if (savedMessages) {
+        try {
+          const parsed = JSON.parse(savedMessages);
+          setInitialMessages(parsed);
+          setMessages(parsed);
+        } catch (e) {
+          console.error("Failed to parse saved messages:", e);
+        }
+      }
+    }
+  }, [setMessages]);
+
+  // Save monitoringTask to localStorage
+  useEffect(() => {
+    if (isHydrated && hasLoadedFromStorage.current) {
+      localStorage.setItem("monitoringTask", JSON.stringify(monitoringTask));
+    }
+  }, [monitoringTask, isHydrated]);
+
+  // Save messages to localStorage
+  useEffect(() => {
+    if (isHydrated && messages.length > 0 && hasLoadedFromStorage.current) {
+      localStorage.setItem("chatMessages", JSON.stringify(messages));
+    }
+  }, [messages, isHydrated]);
 
   // Hydration check
   useEffect(() => {
@@ -82,6 +127,20 @@ export default function Home() {
 
   const handleOptionSelect = (value: string) => {
     sendMessage({ text: value });
+  };
+
+  const handleClearHistory = () => {
+    if (
+      confirm(
+        "Are you sure you want to clear all chat history and reset the monitoring task?",
+      )
+    ) {
+      setMessages([]);
+      setMonitoringTask({ scope: undefined, sources: [] });
+      processedToolCallsRef.current.clear();
+      localStorage.removeItem("monitoringTask");
+      localStorage.removeItem("chatMessages");
+    }
   };
 
   // Extract options from message parts
@@ -142,14 +201,30 @@ export default function Home() {
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
         <div className="flex-shrink-0 border-b px-6 py-4 bg-background/95 backdrop-blur">
-          <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" />
-            <h1 className="text-xl font-semibold">Aim Monitoring Assistant</h1>
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-primary" />
+                <h1 className="text-xl font-semibold">
+                  Aim Monitoring Assistant
+                </h1>
+              </div>
+              <p className="text-sm text-muted-foreground mt-1">
+                Tell me what you would like to monitor, and I will help you set
+                it up
+              </p>
+            </div>
+            {messages.length > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleClearHistory}
+                className="text-xs"
+              >
+                Clear History
+              </Button>
+            )}
           </div>
-          <p className="text-sm text-muted-foreground mt-1">
-            Tell me what you would like to monitor, and I will help you set it
-            up
-          </p>
         </div>
 
         {/* Messages - Scrollable */}
