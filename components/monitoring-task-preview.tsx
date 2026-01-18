@@ -11,6 +11,21 @@ interface MonitoringTaskPreviewProps {
   task: MonitoringTask;
 }
 
+// Helper function to translate source types to readable labels
+const getSourceTypeLabel = (type: string): string => {
+  const labels: Record<string, string> = {
+    website: "Website",
+    rss_feed: "RSS Feed",
+    social_platform: "Social Platform",
+    github_repo: "GitHub Repo",
+    company: "Company",
+    sec_filing: "SEC Filing",
+    news_outlet: "News Outlet",
+    other: "Other",
+  };
+  return labels[type] || type;
+};
+
 export function MonitoringTaskPreview({ task }: MonitoringTaskPreviewProps) {
   // Group sources by type
   const sourcesByType = useMemo(() => {
@@ -82,7 +97,7 @@ export function MonitoringTaskPreview({ task }: MonitoringTaskPreviewProps) {
                     : "bg-muted hover:bg-muted/80"
                 }`}
               >
-                {type} ({sourcesByType[type].length})
+                {getSourceTypeLabel(type)} ({sourcesByType[type].length})
               </button>
             ))}
           </div>
@@ -122,8 +137,8 @@ export function MonitoringTaskPreview({ task }: MonitoringTaskPreviewProps) {
                         </p>
                       )}
                     </div>
-                    <Badge variant="secondary" className="shrink-0">
-                      {source.type}
+                    <Badge variant="outline" className="shrink-0">
+                      {getSourceTypeLabel(source.type)}
                     </Badge>
                   </div>
                   {source.description && (
