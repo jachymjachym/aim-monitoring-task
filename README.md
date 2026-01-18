@@ -32,8 +32,6 @@ pnpm run dev
 
 ## Architecture
 
-To learn more about Next.js, take a look at the following resources:
-
 ### Monitoring Task Schema
 
 1. **Monitoring Scope** (`string`, optional)
@@ -115,11 +113,19 @@ The agent uses two tools to guide the conversation:
 
 ## What I'd Build Next (With One More Week)
 
-### 1. Multiple monitorings
+### 1. Enahnced conversation
+
+- Ability to select more options
+
+### 2. Go back in conversation
+
+- It would be great to revert back to specific checkpoint
+
+### 3. Multiple monitorings
 
 - Having multiple persistent conversations and scopes
 
-### 2. Saving my favourite sources
+### 4. Saving my favourite sources
 
 - Saving my favourites in the current monitoring task
 
