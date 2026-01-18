@@ -8,7 +8,12 @@ import { MonitoringTaskPreview } from "@/components/monitoring-task-preview";
 import { OptionChips } from "@/components/option-chips";
 import { MonitoringTask } from "@/lib/types";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { SendHorizontal, Sparkles } from "lucide-react";
+import {
+  SendHorizontal,
+  Sparkles,
+  PanelRightOpen,
+  PanelRightClose,
+} from "lucide-react";
 
 export default function Home() {
   // State
@@ -19,6 +24,7 @@ export default function Home() {
   const [input, setInput] = useState("");
   const [isHydrated, setIsHydrated] = useState(false);
   const [initialMessages, setInitialMessages] = useState<any[]>([]);
+  const [showPreview, setShowPreview] = useState(false); // Hidden by default on mobile
 
   // Refs for stable callbacks
   const processedToolCallsRef = useRef<Set<string>>(new Set());
@@ -196,51 +202,65 @@ export default function Home() {
   };
 
   return (
-    <div className="h-screen flex overflow-hidden">
+    <div className="h-screen flex flex-col md:flex-row overflow-hidden">
       {/* Chat Section */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 min-h-0 relative">
         {/* Header */}
-        <div className="flex-shrink-0 border-b px-6 py-4 bg-background/95 backdrop-blur">
-          <div className="flex items-center justify-between">
-            <div>
+        <div className="flex-shrink-0 border-b px-4 md:px-6 py-3 md:py-4 bg-background/95 backdrop-blur">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-primary" />
-                <h1 className="text-xl font-semibold">
+                <Sparkles className="h-4 w-4 md:h-5 md:w-5 text-primary flex-shrink-0" />
+                <h1 className="text-base md:text-xl font-semibold truncate">
                   Aim Monitoring Assistant
                 </h1>
               </div>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-xs md:text-sm text-muted-foreground mt-1 hidden sm:block">
                 Tell me what you would like to monitor, and I will help you set
                 it up
               </p>
             </div>
-            {messages.length > 0 && (
+            <div className="flex items-center gap-2 flex-shrink-0">
+              {messages.length > 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleClearHistory}
+                  className="text-xs hidden sm:inline-flex"
+                >
+                  Clear History
+                </Button>
+              )}
               <Button
                 variant="outline"
                 size="sm"
-                onClick={handleClearHistory}
-                className="text-xs"
+                onClick={() => setShowPreview(!showPreview)}
+                className="md:hidden"
               >
-                Clear History
+                {showPreview ? (
+                  <PanelRightClose className="h-4 w-4" />
+                ) : (
+                  <PanelRightOpen className="h-4 w-4" />
+                )}
               </Button>
-            )}
+            </div>
           </div>
         </div>
 
         {/* Messages - Scrollable */}
-        <div className="flex-1 overflow-y-auto p-6" ref={scrollRef}>
-          <div className="max-w-3xl mx-auto space-y-6">
+        <div className="flex-1 overflow-y-auto p-4 md:p-6" ref={scrollRef}>
+          <div className="max-w-3xl mx-auto space-y-4 md:space-y-6">
             {!isHydrated ? (
               <div className="flex items-center justify-center h-32">
                 <p className="text-sm text-muted-foreground">Loading...</p>
               </div>
             ) : messages.length === 0 ? (
-              <Card className="p-8 text-center bg-muted/30">
-                <Sparkles className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                <h2 className="text-lg font-medium mb-2">
+              <Card className="p-6 md:p-8 text-center bg-muted/30">
+                <Sparkles className="h-10 w-10 md:h-12 md:w-12 mx-auto mb-3 md:mb-4 text-muted-foreground" />
+                <h2 className="text-base md:text-lg font-medium mb-2">
                   Let's create your monitoring task
                 </h2>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-xs md:text-sm text-muted-foreground">
                   Start by telling me what you would like to monitor. For
                   example: "I want to monitor AI startups" or "Track news about
                   climate tech"
@@ -258,33 +278,33 @@ export default function Home() {
                 return (
                   <div
                     key={message.id}
-                    className={`flex gap-3 ${
+                    className={`flex gap-2 md:gap-3 ${
                       message.role === "user" ? "justify-end" : "justify-start"
                     }`}
                   >
                     {message.role === "assistant" && (
-                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-1">
-                        <Sparkles className="h-4 w-4 text-primary" />
+                      <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-1">
+                        <Sparkles className="h-3 w-3 md:h-4 md:w-4 text-primary" />
                       </div>
                     )}
 
-                    <div className="max-w-[70%] space-y-2">
+                    <div className="max-w-[85%] md:max-w-[70%] space-y-2">
                       {message.role === "user" ? (
-                        <div className="bg-primary text-primary-foreground rounded-2xl rounded-tr-sm px-4 py-2.5">
-                          <p className="text-sm">{textContent}</p>
+                        <div className="bg-primary text-primary-foreground rounded-2xl rounded-tr-sm px-3 py-2 md:px-4 md:py-2.5">
+                          <p className="text-xs md:text-sm">{textContent}</p>
                         </div>
                       ) : (
                         <>
                           {textContent && (
-                            <div className="bg-muted rounded-2xl rounded-tl-sm px-4 py-2.5">
-                              <p className="text-sm leading-relaxed whitespace-pre-wrap wrap-break-word">
+                            <div className="bg-muted rounded-2xl rounded-tl-sm px-3 py-2 md:px-4 md:py-2.5">
+                              <p className="text-xs md:text-sm leading-relaxed whitespace-pre-wrap wrap-break-word">
                                 {textContent}
                               </p>
                             </div>
                           )}
                           {question && (
-                            <div className="bg-muted rounded-2xl rounded-tl-sm px-4 py-2.5">
-                              <p className="text-sm leading-relaxed font-medium">
+                            <div className="bg-muted rounded-2xl rounded-tl-sm px-3 py-2 md:px-4 md:py-2.5">
+                              <p className="text-xs md:text-sm leading-relaxed font-medium">
                                 {question}
                               </p>
                             </div>
@@ -300,8 +320,8 @@ export default function Home() {
                     </div>
 
                     {message.role === "user" && (
-                      <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0 mt-1">
-                        <span className="text-primary-foreground text-xs font-medium">
+                      <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0 mt-1">
+                        <span className="text-primary-foreground text-[10px] md:text-xs font-medium">
                           You
                         </span>
                       </div>
@@ -312,11 +332,11 @@ export default function Home() {
 
             {isLoading && (
               <div className="flex justify-start">
-                <div className="flex items-center gap-2 bg-muted rounded-2xl px-4 py-3">
+                <div className="flex items-center gap-2 bg-muted rounded-2xl px-3 py-2 md:px-4 md:py-3">
                   <div className="flex gap-1">
-                    <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                    <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                    <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
+                    <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                    <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                    <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-primary rounded-full animate-bounce"></div>
                   </div>
                 </div>
               </div>
@@ -325,7 +345,7 @@ export default function Home() {
         </div>
 
         {/* Input - Fixed at bottom */}
-        <div className="flex-shrink-0 border-t p-4 bg-background/95 backdrop-blur">
+        <div className="flex-shrink-0 border-t p-3 md:p-4 bg-background/95 backdrop-blur">
           <form
             onSubmit={handleSubmit}
             className="max-w-3xl mx-auto flex gap-2"
@@ -333,11 +353,16 @@ export default function Home() {
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Type your message or select an option above..."
+              placeholder="Type your message..."
               disabled={isLoading}
-              className="flex-1"
+              className="flex-1 text-sm"
             />
-            <Button type="submit" disabled={isLoading || !input.trim()}>
+            <Button
+              type="submit"
+              disabled={isLoading || !input.trim()}
+              size="sm"
+              className="md:size-default"
+            >
               <SendHorizontal className="h-4 w-4" />
             </Button>
           </form>
@@ -345,8 +370,26 @@ export default function Home() {
       </div>
 
       {/* Right Panel - Monitoring Task Preview */}
-      <div className="w-96 border-l bg-muted/20">
+      {/* Desktop: always visible, Mobile: overlay when showPreview is true */}
+      <div
+        className={`
+          ${showPreview ? "fixed inset-0 z-50 bg-background md:relative md:z-auto" : "hidden"}
+          md:block md:w-96 md:border-l md:bg-muted/20
+        `}
+      >
         <MonitoringTaskPreview task={monitoringTask} />
+
+        {/* Close button for mobile overlay */}
+        {showPreview && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowPreview(false)}
+            className="absolute top-4 right-4 md:hidden"
+          >
+            <PanelRightClose className="h-4 w-4" />
+          </Button>
+        )}
       </div>
     </div>
   );

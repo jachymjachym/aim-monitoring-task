@@ -75,8 +75,8 @@ export function OptionChips({ options, onSelect }: OptionChipsProps) {
     const placeholders = extractPlaceholders(activeOption.value);
 
     return (
-      <div className="my-3 p-4 border rounded-lg bg-muted/30 space-y-3">
-        <p className="text-sm font-medium">{activeOption.label}</p>
+      <div className="my-2 md:my-3 p-3 md:p-4 border rounded-lg bg-muted/30 space-y-2 md:space-y-3">
+        <p className="text-xs md:text-sm font-medium">{activeOption.label}</p>
         <div className="space-y-2">
           {placeholders.map((placeholder) => (
             <div key={placeholder}>
@@ -92,7 +92,7 @@ export function OptionChips({ options, onSelect }: OptionChipsProps) {
                   }))
                 }
                 placeholder={`Enter ${placeholder.toLowerCase()}`}
-                className="text-sm"
+                className="text-xs md:text-sm"
               />
             </div>
           ))}
@@ -102,7 +102,7 @@ export function OptionChips({ options, onSelect }: OptionChipsProps) {
             size="sm"
             onClick={handleSubmitWithInput}
             disabled={!allInputsFilled}
-            className="flex-1"
+            className="flex-1 text-xs md:text-sm"
           >
             <Send className="h-3 w-3 mr-1" />
             Submit
@@ -111,7 +111,7 @@ export function OptionChips({ options, onSelect }: OptionChipsProps) {
             size="sm"
             variant="outline"
             onClick={handleCancel}
-            className="flex-1"
+            className="flex-1 text-xs md:text-sm"
           >
             Cancel
           </Button>
@@ -121,7 +121,7 @@ export function OptionChips({ options, onSelect }: OptionChipsProps) {
   }
 
   return (
-    <div className="flex flex-wrap gap-2 my-3">
+    <div className="flex flex-wrap gap-1.5 md:gap-2 my-2 md:my-3">
       {options.map((option, idx) => (
         <Button
           key={idx}
@@ -129,7 +129,7 @@ export function OptionChips({ options, onSelect }: OptionChipsProps) {
           size="sm"
           onClick={() => handleSelect(option)}
           disabled={selected !== null && selected !== option.value}
-          className="rounded-full"
+          className="rounded-full text-xs md:text-sm"
         >
           {option.label}
         </Button>
